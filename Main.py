@@ -105,7 +105,6 @@ class mainWindow(qtw.QWidget):
         print(test)                                 # test - delete later
         db.commit()
         db.close()
-        pass
 
 
 app = qtw.QApplication([])
