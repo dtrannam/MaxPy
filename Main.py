@@ -59,7 +59,7 @@ class mainWindow(qtw.QWidget):
         deleteDate.setObjectName('')
         deleteDate.setText('[YYYY-MM-DD]')
         self.layout().addWidget(deleteDate, 2, 1)
-        delete_button = qtw.QPushButton('Delete Entry [Input Date]', clicked=lambda: add_entry())
+        delete_button = qtw.QPushButton('Delete Entry [Input Date]', clicked=lambda: self.deleteLog(deleteDate.text(), deleteLift.currentText()))
         self.layout().addWidget(delete_button, 3, 1)
         # Progress Check
         show_table = qtw.QPushButton('Display Table', clicked=lambda: add_entry())
@@ -82,12 +82,13 @@ class mainWindow(qtw.QWidget):
         def add_entry():
             print(f'Pick: {entryDate.text()} {entryLift.currentText()} {entryRep.text()} {checkBP.checkState()}')
 
+    # everything here is sqlite queries
     def createTable(self):
         db = sqlite3.connect("Weight.db")
         cursor = db.cursor()
         cursor.execute('''Create Table IF NOT EXISTS WeightPR (
                         Lift BLOB,
-                        Date BLOB UNIQUE,
+                        Date BLOB,
                         InputWeight REAL,
                         Rep REAL,
                         EstimatedMax REAL
@@ -96,17 +97,44 @@ class mainWindow(qtw.QWidget):
         db.close()
 
     def logProgress(self, lift, day, inputWeight, rep):
-        estimatedMax = inputWeight * (1 + rep / 30)     # using Epley formula
+            # add alert message when entry is not valid
+            # add over - ride option
+        inputWeight = int(inputWeight)
+        rep = int(rep)
+        estimatedMax = inputWeight * (1 + rep/ 30)     # using Epley formula
         db = sqlite3.connect("Weight.db")
         cursor = db.cursor()
-        cursor.execute('INSERT INTO WeightPR values (?, ?, ?, ?, ?);', (lift, day, inputWeight, rep, estimatedMax))
+        cursor.execute('INSERT INTO WeightPR values (?, ?, ?, ?, ?) ',(lift, day, inputWeight, rep, estimatedMax))
         cursor.execute('Select * from WeightPR')    # test - delete later
         test = cursor.fetchall()                    # test - delete later
         print(test)                                 # test - delete later
         db.commit()
         db.close()
+        self.testSQL()
 
+    def deleteLog(self, day, lift):
+        print(f'deleted {lift} fpr {day}')
+        db = sqlite3.connect("Weight.db")
+        cursor = db.cursor()
+        cursor.execute(f"Delete From WeightPR where Date = '{day}' AND Lift = '{lift}'")
+        db.commit()
+        db.close()
+        self.testSQL()
+
+    # testing function
+    def testSQL(self):
+        conn = sqlite3.connect('Weight.db')
+        c = conn.cursor()
+        # c.execute("Insert into WeightPR Values ('3','3','3','3','3')")
+        c.execute("Select * from WeightPR")
+        print(c.fetchall())
+        conn.commit()
+        conn.close()
+
+    def testPython(self):
+        print('This is working I hope')
 
 app = qtw.QApplication([])
 mw = mainWindow()
 app.exec_()
+mw.testSQL()
