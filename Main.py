@@ -99,7 +99,7 @@ class mainWindow(qtw.QWidget):
         estimatedMax = inputWeight * (1 + rep / 30)     # using Epley formula
         db = sqlite3.connect("Weight.db")
         cursor = db.cursor()
-        cursor.execute('INSERT INTO WeightPR values (?, ?, ?, ?, ?)', (lift, day, inputWeight, rep, estimatedMax))
+        cursor.execute('INSERT INTO WeightPR values (?, ?, ?, ?, ?);', (lift, day, inputWeight, rep, estimatedMax))
         cursor.execute('Select * from WeightPR')    # test - delete later
         test = cursor.fetchall()                    # test - delete later
         print(test)                                 # test - delete later
