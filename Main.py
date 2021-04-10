@@ -12,8 +12,11 @@ class mainWindow(qtw.QWidget):
         self.setLayout(qtw.QGridLayout())  # Layout
         self.createTable()
         self.logGUI()
+        self.logTable()
         self.show()
         # Entry fields
+    def logTable(self):
+        tables = qtw.QTableWidget.setColumnWidth(15)
 
     def logGUI(self):
         projectLabel = qtw.QLabel('Enter new PR')
@@ -64,7 +67,7 @@ class mainWindow(qtw.QWidget):
         # Progress Check
         show_table = qtw.QPushButton('Display Table', clicked=lambda: add_entry())
         self.layout().addWidget(show_table, 4, 1)
-        show_graph = qtw.QPushButton('Display Graph', clicked=lambda: add_entry())
+        show_graph = qtw.QPushButton('Display Graph', clicked=lambda: self.showGraph(deleteLift.currentText()))
         self.layout().addWidget(show_graph, 5, 1)
         # CSV set up
         checkBP = qtw.QCheckBox('Bench Press')
@@ -97,8 +100,7 @@ class mainWindow(qtw.QWidget):
         db.close()
 
     def logProgress(self, lift, day, inputWeight, rep):
-            # add alert message when entry is not valid
-            # add over - ride option
+
         inputWeight = int(inputWeight)
         rep = int(rep)
         estimatedMax = inputWeight * (1 + rep/ 30)     # using Epley formula
@@ -121,11 +123,33 @@ class mainWindow(qtw.QWidget):
         db.close()
         self.testSQL()
 
+    def showGraph(self, lift):
+        conn = sqlite3.connect('Weight.db')
+        conn.close()
+        dates = []
+        numbers = []
+        db = sqlite3.connect("Weight.db")
+        cursor = db.cursor()
+        cursor.execute(f"Select date, EstimatedMax from WeightPR where Lift='{lift}'")
+        test = cursor.fetchall()
+        for item in test:
+            dates.append(item[0])
+            numbers.append(item[1])
+        print(dates, numbers, lift)
+        convertDate = [datetime.strptime(day, '%Y-%m-%d') for day in dates]
+        graph.plot(convertDate, numbers, label='Progression', linestyle='dashed', color='red')
+        graph.legend()
+        graph.title(f'{lift}')
+        graph.ylabel('Weight')
+        graph.xlabel('Date')
+        graph.show()
+
+
+
     # testing function
     def testSQL(self):
         conn = sqlite3.connect('Weight.db')
         c = conn.cursor()
-        # c.execute("Insert into WeightPR Values ('3','3','3','3','3')")
         c.execute("Select * from WeightPR")
         print(c.fetchall())
         conn.commit()
@@ -137,4 +161,3 @@ class mainWindow(qtw.QWidget):
 app = qtw.QApplication([])
 mw = mainWindow()
 app.exec_()
-mw.testSQL()
