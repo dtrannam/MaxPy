@@ -12,11 +12,26 @@ class mainWindow(qtw.QWidget):
         self.setLayout(qtw.QGridLayout())  # Layout
         self.createTable()
         self.logGUI()
+        self.createTable()
         self.logTable()
         self.show()
         # Entry fields
+
     def logTable(self):
-        tables = qtw.QTableWidget.setColumnWidth(15)
+        test = qtw.QTableWidget()
+        test.setRowCount(10)
+        test.setColumnCount(5)
+        test.setItem(0, 0, qtw.QTableWidgetItem("Cell (1,1)"))
+        test.setItem(0, 1, qtw.QTableWidgetItem("Cell (1,2)"))
+        test.setItem(1, 0, qtw.QTableWidgetItem("Cell (2,1)"))
+        test.setItem(1, 1, qtw.QTableWidgetItem("Cell (2,2)"))
+        test.setItem(2, 0, qtw.QTableWidgetItem("Cell (3,1)"))
+        test.setItem(2, 1, qtw.QTableWidgetItem("Cell (3,2)"))
+        test.setItem(3, 0, qtw.QTableWidgetItem("Cell (4,1)"))
+        test.setItem(3, 1, qtw.QTableWidgetItem("Cell (4,2)"))
+        test.horizontalHeader().setStretchLastSection(True)
+        test.horizontalHeader().setSectionResizeMode(qtw.QHeaderView.Stretch)
+        self.layout().addWidget(test, 6, 0, 1, 5)
 
     def logGUI(self):
         projectLabel = qtw.QLabel('Enter new PR')
@@ -25,7 +40,7 @@ class mainWindow(qtw.QWidget):
         # Set Icon
         self.setWindowIcon(QIcon('weights.jpg'))
         # Set window size
-        self.setGeometry(300, 300, 300, 150)
+        self.setGeometry(500, 500, 500, 500)
         # Combo Box for which weights
         entryLift = qtw.QComboBox(self)
         entryLift.addItem('Bench Press')
@@ -146,7 +161,7 @@ class mainWindow(qtw.QWidget):
 
 
 
-    # testing function
+    # testing functions
     def testSQL(self):
         conn = sqlite3.connect('Weight.db')
         c = conn.cursor()
