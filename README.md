@@ -13,9 +13,9 @@ Add Export Option;
 
 Explore Importing option;
 
-Update Table to reflect top 10 by default;
+Update Table to reflect top 10 by default - DONE
 
-Update Table to reflect user out put;
+Update Table to reflect user out put; 
 
 Data validation; 
 
