@@ -10,14 +10,14 @@ import sqlite3
 #                 )''')
 
 
-conn = sqlite3.connect('Weight.db')
-c = conn.cursor()
+# conn = sqlite3.connect('Weight.db')
+# c = conn.cursor()
 
 # c.execute('Delete From WeightPR') --- DELETE
 
-
-conn.commit()
-conn.close()
+#
+# conn.commit()
+# conn.close()
 
 # get data:
 # c.execute("Select date, EstimatedMax from WeightPR where Lift='Bench Press'")
@@ -33,3 +33,11 @@ conn.close()
 #         c.execute("INSERT INTO WeightPR values (?, ?, ?, ?, ?)", item)
 #     conn.commit()
 # data_entry(item)
+import datetime
+
+def validate(date_text):
+    # source from: https://stackoverflow.com/questions/16870663/how-do-i-validate-a-date-string-format-in-python
+    try:
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
+    except ValueError:
+        raise ValueError("Incorrect data format, should be YYYY-MM-DD")

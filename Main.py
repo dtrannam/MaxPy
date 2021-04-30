@@ -1,6 +1,7 @@
 import PyQt5.QtWidgets as qtw
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import *
-from datetime import date, datetime
+import datetime
 import sqlite3
 import matplotlib.pyplot as graph
 
@@ -27,7 +28,7 @@ class mainWindow(qtw.QWidget):
         projectLabel.setFont(QFont('Arial', 10))
         self.layout().addWidget(projectLabel, 0, 0)
         self.setWindowIcon(QIcon('weights.jpg'))
-        self.setGeometry(500, 500, 500, 500)
+        self.setGeometry(500, 500, 250, 500)
 
     def logGUI(self):
         # Combo Box for looping through individual lifts
@@ -136,18 +137,22 @@ class mainWindow(qtw.QWidget):
         db.close()
 
     def logProgress(self, lift, day, inputWeight, rep):
-        inputWeight = int(inputWeight)
-        rep = int(rep)
-        estimatedMax = inputWeight * (1 + rep / 30)  # using Epley formula
-        db = sqlite3.connect("Weight.db")
-        cursor = db.cursor()
-        cursor.execute('INSERT INTO WeightPR values (?, ?, ?, ?, ?) ', (lift, day, inputWeight, rep, estimatedMax))
-        cursor.execute('Select * from WeightPR')  # test - delete later
-        test = cursor.fetchall()  # test - delete later
-        print(test)  # test - delete later
-        db.commit()
-        db.close()
-        self.testSQL()
+        try:
+            datetime.datetime.strptime(day, "%Y-%m-%d")     # Date Validation
+            inputWeight = int(inputWeight)
+            rep = int(rep)
+            estimatedMax = inputWeight * (1 + rep / 30)  # Adjust formula here
+            db = sqlite3.connect("Weight.db")
+            cursor = db.cursor()
+            cursor.execute('INSERT INTO WeightPR values (?, ?, ?, ?, ?) ', (lift, day, inputWeight, rep, estimatedMax))
+            cursor.execute('Select * from WeightPR')  # test - delete later
+            test = cursor.fetchall()  # test - delete later
+            print(test)  # test - delete later
+            db.commit()
+            db.close()
+            self.testSQL()
+        except:
+            alert = App()
 
     def deleteLog(self, day, lift):
         print(f'deleted {lift} for {day}')
@@ -181,6 +186,8 @@ class mainWindow(qtw.QWidget):
         graph.xlabel('Date')
         graph.show()
 
+    def dateValidation(self):
+        pass
     # testing functions
     def testSQL(self):
         conn = sqlite3.connect('Weight.db')
@@ -193,6 +200,18 @@ class mainWindow(qtw.QWidget):
     def testPython(self):
         print('This is working I hope')
 
+
+class App(qtw.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.title = 'Error Alert'
+        self.setGeometry(500, 250, 320, 200)
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        buttonReply = qtw.QMessageBox.question(self, "Error", "Check input data and try again", qtw.QMessageBox.Close)
+        self.show()
 
 app = qtw.QApplication([])
 mw = mainWindow()
