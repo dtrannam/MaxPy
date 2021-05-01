@@ -5,11 +5,12 @@ Built using Python and Sqlite, this program is a simple fitness tracker that all
 The following items are needed to get started:
 
 Pyqt5 - https://pypi.org/project/PyQt5/
+
 Sqlite - https://www.sqlitetutorial.net/download-install-sqlite/
 
 #### Instructions
 
-
+![Main Page](Image/Main.png)
 
           
           
